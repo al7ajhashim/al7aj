@@ -1,0 +1,637 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+<!-- 
+        <record id="view_fin_app_account_payment_calendar" model="ir.ui.view">
+            <field name="name">view_fin_app_account_payment.calendar</field>
+            <field name="model">account.payment</field>
+            <field name="arch" type="xml">
+                <calendar string="Bank Payment" date_start="date_bank" color="payment_type">
+                    <field name="partner_id"/>
+                    <field name="journal_id"/>
+                    <field name="amount" widget="monetary"/>
+                </calendar>
+            </field>
+        </record>
+
+        <record id="view_fin_app_account_payment_form" model="ir.ui.view">
+            <field name="name">fin.app.account.payment.form</field>
+            <field name="model">account.payment</field>
+            <field name="priority">3</field>
+            <field name="arch" type="xml">
+                <form string="Register Payment">
+                    <header>
+                        <button name="post" class="oe_highlight" states="draft" string="Confirm" type="object"/>
+                        <button name="action_draft" class="oe_highlight" states="cancelled" string="Set To Draft" type="object"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,posted,reconciled,cancelled"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button class="oe_stat_button" name="button_journal_entries"
+                                    string="Journal Items" type="object"
+                                    groups="account.group_account_user"
+                                    attrs="{'invisible':[('move_line_ids','=',[])]}" icon="fa-bars"/>
+                            <field name="move_line_ids" invisible="1"/>
+                            <button class="oe_stat_button" name="button_invoices"
+                                    string="Invoices" type="object"
+                                    attrs="{'invisible':[('has_invoices','=',False)]}" icon="fa-bars"/>
+                            <button class="oe_stat_button" name="open_payment_matching_screen"
+                                    string="Payment Matching" type="object"
+                                    attrs="{'invisible':[('move_reconciled','=',True)]}" icon="fa-university"/>
+                            <field name="has_invoices" invisible="1"/>
+                            <field name="move_reconciled" invisible="1"/>
+                        </div>
+                        <field name="id" invisible="1"/>
+                        <div class="oe_title" attrs="{'invisible': [('state', '=', 'draft')]}">
+                            <h1><field name="name"/></h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="payment_type" widget="radio" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="partner_type" widget="selection" attrs="{'required': [('state', '=', 'draft'), ('payment_type', 'in', ('inbound', 'outbound'))], 'invisible': [('payment_type', 'not in', ('inbound', 'outbound'))], 'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="partner_id" attrs="{'required': [('state', '=', 'draft'), ('payment_type', 'in', ('inbound', 'outbound'))], 'invisible': [('payment_type', 'not in', ('inbound', 'outbound'))], 'readonly': [('state', '!=', 'draft')]}" context="{'default_is_company': True, 'default_supplier': payment_type == 'outbound', 'default_customer': payment_type == 'inbound'}"/>
+                                <label for="amount"/>
+                                <div name="amount_div" class="o_row">
+                                    <field name="amount" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                    <field name="currency_id" options="{'no_create': True, 'no_open': True}" groups="base.group_multi_currency" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                </div>
+                                <field name="journal_id" widget="selection" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="destination_journal_id" widget="selection" attrs="{'required': [('payment_type', '=', 'transfer')], 'invisible': [('payment_type', '!=', 'transfer')], 'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="hide_payment_method" invisible="1"/>
+                                <field name="payment_method_id" string=" " widget="radio" attrs="{'invisible': [('hide_payment_method', '=', True)], 'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="partner_bank_account_id" attrs="{'invisible': [('show_partner_bank_account', '!=', True)], 'required': [('show_partner_bank_account', '=', True)], 'readonly': [('state', '!=', 'draft')]}" context="{'default_partner_id': partner_id}"/>
+                                <field name="show_partner_bank_account" invisible="1"/>
+                                <field name="payment_method_code" invisible="1"/>
+                                <field name="type_journal" invisible="1"/>
+                                <field name="date_bank" attrs="{'invisible': [('type_journal', '!=', 'bank')], 'required': [('type_journal', '=', 'bank')], 'readonly': [('type_journal', '!=', 'bank')]}"/>
+                            </group>
+                            <group>
+                                <field name="payment_date" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="communication" attrs="{'invisible': [('state', '!=', 'draft'), ('communication', '=', False)], 'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="payment_transaction_id"/>
+                            </group>
+                        </group>
+                    </sheet>
+                    <div class="oe_chatter">
+                      <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+                      <field name="message_ids" widget="mail_thread"/>
+                  </div>
+                </form>
+            </field>
+        </record>
+ -->
+
+        <!-- <record id="action_payment_bank_app" model="ir.actions.act_window">
+            <field name="name">Bank Payment</field>
+            <field name="res_model">account.payment</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">calendar</field>
+            <field name="view_id" ref="view_fin_app_account_payment_calendar"/>
+            <field name="domain">[('journal_id.type','=','bank')]</field>
+        </record> -->
+
+
+        <!-- ################################################################################################################## -->
+        <!-- #####################  create action and menu for purchase.order Configration   ############################## -->
+        <!-- ################################################################################################################## -->
+
+        <record id="open_fin_pur_inv_act" model="ir.actions.act_window">
+            <field name="name">Purchase to Invoice</field>
+            <field name="res_model">purchase.order</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('invoice_status','=','to invoice')]</field>
+        </record>
+
+
+        <!-- #####################################  create sub menuitem   ############################## -->
+
+
+		<!-- ################################################################################################################## -->
+        <!-- #####################################  create root menuitem for account   ############################## -->
+
+        <menuitem  id="menu_fin_acc_root" name="Accounting Management" web_icon="fin_app,static/description/icon.png" groups="fin_app.group_fin_acc_mang" sequence="7"/>
+
+        <menuitem  id="menu_fin_acc" name="Accounting" parent="menu_fin_acc_root" groups="fin_app.group_fin_acc_mang" sequence="2"/>
+        <!-- perant main menu -->
+        <!-- <menuitem  id="menu_fin_acc_dash" name="Dashboard" action="account.open_account_journal_dashboard_kanban" parent="menu_fin_acc" groups="fin_app.group_fin_acc_mang" sequence="2"/>
+        <menuitem  id="menu_fin_acc_sale" name="Sales" parent="menu_fin_acc" groups="fin_app.group_fin_acc_mang" sequence="4"/>
+        <menuitem  id="menu_fin_acc_sale_cust_inv" name="Customer Invoices" action="account.action_invoice_tree1" parent="menu_fin_acc_sale" groups="fin_app.group_fin_acc_mang" sequence="1"/>
+        <menuitem  id="menu_fin_acc_sale_paym" name="Payments" action="account.action_account_payments" parent="menu_fin_acc_sale" groups="fin_app.group_fin_acc_mang" sequence="2"/>
+        <menuitem  id="menu_fin_acc_sale_cust" name="Customers" action="base.action_partner_customer_form" parent="menu_fin_acc_sale" groups="fin_app.group_fin_acc_mang" sequence="3"/>
+        <menuitem  id="menu_fin_acc_purch" name="Purchases" parent="menu_fin_acc" groups="fin_app.group_fin_acc_mang" sequence="6"/>
+        <menuitem  id="menu_fin_acc_purch_bills" name="Vendor Bills" action="account.action_invoice_tree2" parent="menu_fin_acc_purch" groups="fin_app.group_fin_acc_mang" sequence="1"/>
+        <menuitem  id="menu_fin_acc_purch_paym" name="Payments" action="account.action_account_payments_payable" parent="menu_fin_acc_purch" groups="fin_app.group_fin_acc_mang" sequence="2"/>
+        <menuitem  id="menu_fin_acc_purch_vendor" name="Vendors" action="base.action_partner_supplier_form" parent="menu_fin_acc_purch" groups="fin_app.group_fin_acc_mang" sequence="3"/> -->
+        
+        <menuitem  id="menu_fin_acc_inv" name="Invoices" parent="menu_fin_acc_root" groups="fin_app.group_fin_acc_mang" sequence="4"/>
+        <menuitem  id="menu_fin_acc_inv_sale" name="Customer Invoices" action="account.action_invoice_tree1" parent="menu_fin_acc_inv" groups="fin_app.group_fin_acc_mang" sequence="1"/>
+        <menuitem  id="menu_fin_acc_inv_purchase" name="Vendor Invoices" action="account.action_invoice_tree2" parent="menu_fin_acc_inv" groups="fin_app.group_fin_acc_mang" sequence="3"/>
+        
+        <menuitem  id="menu_fin_acc_pay" name="Payments" parent="menu_fin_acc_root" groups="fin_app.group_fin_acc_mang" sequence="6"/>
+        <menuitem  id="menu_fin_acc_pay_sale" name="Customer Payments" action="account.action_account_payments" parent="menu_fin_acc_pay" groups="fin_app.group_fin_acc_mang" sequence="1"/>
+        <menuitem  id="menu_fin_acc_pay_purchase" name="Vendor Payments" action="account.action_account_payments_payable" parent="menu_fin_acc_pay" groups="fin_app.group_fin_acc_mang" sequence="3"/>
+        <!-- <menuitem  id="menu_fin_acc_pay_bank" name="Bank Payment" action="action_payment_bank_app" parent="menu_fin_acc_pay" groups="fin_app.group_fin_acc_mang" sequence="5"/> -->
+        <menuitem  id="menu_fin_acc_adv" name="Data" parent="menu_fin_acc_root" groups="fin_app.group_fin_acc_mang" sequence="8"/>
+        <menuitem  id="menu_fin_acc_adv_journal_item" name="Journal Items" action="account.action_account_moves_all_a" parent="menu_fin_acc_adv" groups="fin_app.group_fin_acc_mang" sequence="1"/>
+        <menuitem  id="menu_fin_acc_adv_journal_entries" name="Journal Entries" action="account.action_move_journal_line" parent="menu_fin_acc_adv" groups="fin_app.group_fin_acc_mang" sequence="2"/>
+        <menuitem  id="menu_fin_acc_adv_chart_acc" name="Chart of Accounts" action="account.action_account_form" parent="menu_fin_acc_adv" groups="fin_app.group_fin_acc_mang" sequence="3"/>
+        <!-- <menuitem  id="menu_fin_acc_adv_assets" name="Assets" action="account_asset.action_account_asset_asset_form" parent="menu_fin_acc_adv" groups="fin_app.group_fin_acc_mang" sequence="4"/>
+        <menuitem  id="menu_fin_acc_adv_assets_wizard_act" name="Generate Assets Entries" action="account_asset.action_asset_depreciation_confirmation_wizard" parent="menu_fin_acc_adv" groups="fin_app.group_fin_acc_mang" sequence="5"/> -->
+
+        
+
+
+
+        <!-- ################################################################################################################## -->
+        <!-- #####################################  create root menuitem for orders   ############################## -->
+
+        <menuitem  id="menu_fin_order_root" name="Orders Management" web_icon="fin_app,static/description/icon.png" groups="fin_app.group_fin_sale_mang,fin_app.group_fin_pur_mang,fin_app.group_fin_pos_mang,fin_app.group_fin_stock_mang" sequence="0"/>
+
+        <menuitem  id="menu_fin_order_stock" name="Warehouse" parent="menu_fin_order_root" groups="fin_app.group_fin_stock_mang" sequence="3"/>
+        <!-- perant main menu -->
+     <!--   <menuitem  id="menu_fin_ord_stock_dash" name="Dashboard" action="stock.stock_picking_type_action" parent="menu_fin_order_stock" groups="fin_app.group_fin_stock_mang" sequence="2"/>
+        <menuitem  id="menu_fin_ord_stock_oper" name="Operations" parent="menu_fin_order_stock" groups="fin_app.group_fin_stock_mang" sequence="6"/> -->
+        <menuitem  id="menu_fin_ord_stock_oper_all" name="Stock Operations" action="stock.stock_picking_type_action" parent="menu_fin_order_stock" groups="fin_app.group_fin_stock_mang" sequence="1"/>
+        <menuitem  id="menu_fin_ord_stock_move" name="Stock Moves" action="stock.stock_move_action" parent="menu_fin_order_stock" groups="fin_app.group_fin_stock_mang" sequence="3"/>
+        <!-- <menuitem  id="menu_fin_ord_stock_quant" name="Inventory Valuation" action="stock.quantsact" parent="menu_fin_order_stock" groups="fin_app.group_fin_stock_mang" sequence="5"/> -->
+<!--        <menuitem  id="menu_fin_ord_stock_product" name="Products" action="stock.product_template_action_product" parent="menu_fin_order_stock" groups="fin_app.group_fin_stock_mang" sequence="7"/>-->
+        <!-- <menuitem  id="menu_fin_ord_stock_product_var" name="Products Variants" action="stock.stock_product_normal_action" parent="menu_fin_order_stock" groups="fin_app.group_fin_stock_mang" sequence="9"/> -->
+
+        <menuitem  id="menu_fin_order" name="Order" parent="menu_fin_order_root" groups="fin_app.group_fin_sale_mang,fin_app.group_fin_pur_mang" sequence="4"/>
+
+        <menuitem  id="menu_fin_pur_pur" name="Purchase" parent="menu_fin_order_root" groups="fin_app.group_fin_pur_mang" sequence="4"/>
+        <menuitem  id="menu_fin_pur_pur_quot" name="Quotations" action="purchase.purchase_rfq" parent="menu_fin_pur_pur" groups="fin_app.group_fin_pur_mang" sequence="2"/>
+        <menuitem  id="menu_fin_pur_pur_ord" name="Purchase Orders" action="purchase.purchase_form_action" parent="menu_fin_pur_pur" groups="fin_app.group_fin_pur_mang" sequence="3"/>
+        <!-- <menuitem  id="menu_fin_pur_inv_or" name="Purchase to Invoice" action="open_fin_pur_inv_act" parent="menu_fin_pur_pur" groups="fin_app.group_fin_acc_mang,fin_app.group_fin_pur_mang" sequence="7"/> -->
+        <menuitem  id="menu_fin_conf_report_pur_rp" name="Purchase ِAnalysis" action="purchase.action_purchase_order_report_all" parent="menu_fin_pur_pur" groups="fin_app.group_fin_pur_mang" sequence="9"/>
+
+
+        <menuitem  id="menu_fin_sale_sale" name="Sales" parent="menu_fin_order_root" groups="fin_app.group_fin_sale_mang" sequence="6"/>
+        <menuitem  id="menu_fin_sale_opp" name="Opportunities" action="crm.crm_lead_opportunities_tree_view" parent="menu_fin_sale_sale" groups="fin_app.group_fin_sale_mang" sequence="1"/>
+        <menuitem  id="menu_fin_sale_sale_quot" name="Quotations" action="sale.action_quotations" parent="menu_fin_sale_sale" groups="fin_app.group_fin_sale_mang" sequence="2"/>
+        <menuitem  id="menu_fin_sale_sale_ord" name="Sales Orders" action="sale.action_orders" parent="menu_fin_sale_sale" groups="fin_app.group_fin_sale_mang" sequence="3"/>
+        <!-- <menuitem  id="menu_fin_sale_inv_to" name="Sales to Invoice" action="sale.action_orders_to_invoice" parent="menu_fin_sale_sale" groups="fin_app.group_fin_sale_mang,fin_app.group_fin_acc_mang" sequence="7"/> -->
+        <menuitem  id="menu_fin_conf_report_sale_rp" name="Sale ِAnalysis" action="sale.action_order_report_all" parent="menu_fin_sale_sale" groups="fin_app.group_fin_pur_mang" sequence="9"/>
+
+
+<!--        <menuitem id="app_pos_system_menu"-->
+<!--            name="Point of Sale"-->
+<!--            parent="menu_fin_order_root"-->
+<!--            sequence="8" groups="fin_app.group_fin_pos_mang"/>-->
+
+<!--        <menuitem id="menu_system_pos_dash_app"-->
+<!--            name="Dashboard"-->
+<!--            action="point_of_sale.action_pos_config_kanban"-->
+<!--            parent="app_pos_system_menu"-->
+<!--            sequence="3" groups="fin_app.group_fin_pos_mang"/>-->
+
+<!--        <menuitem id="menu_system_pos_session_app"-->
+<!--            name="Sessions"-->
+<!--            action="point_of_sale.action_pos_session"-->
+<!--            parent="app_pos_system_menu"-->
+<!--            sequence="6" groups="fin_app.group_fin_pos_mang"/>-->
+
+<!--        <menuitem id="menu_system_pos_order_app"-->
+<!--            name="POS Orders"-->
+<!--            action="point_of_sale.action_pos_pos_form"-->
+<!--            parent="app_pos_system_menu"-->
+<!--            sequence="9" groups="fin_app.group_fin_pos_mang"/>-->
+
+<!--        <menuitem id="menu_system_pos_rep_app"-->
+<!--            name="POS Sales Details"-->
+<!--            action="point_of_sale.action_report_pos_details"-->
+<!--            parent="app_pos_system_menu"-->
+<!--            sequence="12" groups="fin_app.group_fin_pos_mang"/>-->
+
+        <menuitem  id="menu_fin_sale_inv" name="Invoices" parent="menu_fin_order_root" groups="fin_app.group_fin_sale_mang,fin_app.group_fin_pur_mang,fin_app.group_fin_acc_mang" sequence="8"/>
+        <!--menuitem  id="menu_fin_sale_inv_up" name="Orders to Upsell" action="sale.action_orders_upselling" parent="menu_fin_sale_inv" groups="fin_app.group_fin_sale_mang" sequence="2"/-->
+
+        <menuitem  id="menu_fin_ord_acc" name="Accounting" parent="menu_fin_order_root" groups="fin_app.group_fin_acc_mang,fin_app.group_fin_sale_mang,fin_app.group_fin_pur_mang" sequence="12"/>
+        <!-- perant main menu -->
+        <!-- <menuitem  id="menu_fin_acc_ord_pay_bank" name="Bank Payment" action="action_payment_bank_app" parent="menu_fin_ord_acc" groups="fin_app.group_fin_acc_mang,fin_app.group_fin_sale_mang,fin_app.group_fin_pur_mang" sequence="2"/> -->
+        <menuitem  id="menu_fin_acc_ord_sale" name="Sales" parent="menu_fin_ord_acc" groups="fin_app.group_fin_acc_mang,fin_app.group_fin_sale_mang" sequence="4"/>
+        <menuitem  id="menu_fin_acc_ord_sale_cust_inv" name="Customer Invoices" action="account.action_invoice_tree1" parent="menu_fin_acc_ord_sale" groups="fin_app.group_fin_acc_mang,fin_app.group_fin_sale_mang" sequence="1"/>
+        <menuitem  id="menu_fin_acc_ord_sale_paym" name="Payments" action="account.action_account_payments" parent="menu_fin_acc_ord_sale" groups="fin_app.group_fin_acc_mang,fin_app.group_fin_sale_mang" sequence="2"/>
+        <menuitem  id="menu_fin_ord_acc_purch" name="Purchases" parent="menu_fin_ord_acc" groups="fin_app.group_fin_acc_mang,fin_app.group_fin_pur_mang" sequence="6"/>
+        <menuitem  id="menu_fin_acc_ord_purch_bills" name="Vendor Bills" action="account.action_invoice_tree2" parent="menu_fin_ord_acc_purch" groups="fin_app.group_fin_acc_mang,fin_app.group_fin_pur_mang" sequence="1"/>
+        <menuitem  id="menu_fin_acc_ord_purch_paym" name="Payments" action="account.action_account_payments_payable" parent="menu_fin_ord_acc_purch" groups="fin_app.group_fin_acc_mang,fin_app.group_fin_pur_mang" sequence="2"/>
+
+
+        <menuitem  id="menu_fin_order_data" name="Data" parent="menu_fin_order_root" groups="fin_app.group_fin_sale_mang,fin_app.group_fin_pur_mang,fin_app.group_fin_stock_mang" sequence="2"/>
+        <menuitem  id="menu_fin_order_data_vendor" name="Vendors" action="base.action_partner_supplier_form" parent="menu_fin_order_data" groups="fin_app.group_fin_pur_mang" sequence="3"/>
+        <menuitem  id="menu_fin_order_data_cust" name="Customer" action="base.action_partner_form" parent="menu_fin_order_data" groups="fin_app.group_fin_sale_mang" sequence="5"/>
+        <menuitem  id="menu_fin_order_data_produc" name="Products" action="stock.product_template_action_product" parent="menu_fin_order_data" groups="fin_app.group_fin_stock_mang" sequence="1"/>
+
+
+
+        <!-- ################################################################################################################## -->
+        <!-- #####################################  create root menuitem for Configration   ############################## -->
+
+        <!-- <menuitem  id="menu_fin_app_root" name="Fin-App" web_icon="fin_app,static/description/icon.png" groups="fin_app.group_fin_app" sequence="11"/>
+
+        <menuitem  id="menu_fin_app_project" name="Projects" parent="menu_fin_app_root" groups="fin_app.group_fin_app_pro" sequence="2"/>
+        <menuitem  id="menu_fin_app_project_dash" name="Dashboard" parent="menu_fin_app_project" groups="fin_app.group_fin_app_pro" action="project.open_view_project_all" sequence="2"/>
+        <menuitem  id="menu_fin_app_project_task" name="Tasks" parent="menu_fin_app_project" groups="fin_app.group_fin_app_pro" action="project.action_view_task" sequence="4"/>
+
+        <menuitem  id="menu_fin_app_time" name="Timesheet" parent="menu_fin_app_root" groups="fin_app.group_fin_app_time" sequence="4"/>
+        <menuitem  id="menu_fin_app_time_time" name="Timesheet" parent="menu_fin_app_time" groups="fin_app.group_fin_app_time" action="hr_timesheet.act_hr_timesheet_line" sequence="2"/>
+
+        <menuitem  id="menu_fin_app_equipments" name="Maintenance and Equipments" parent="menu_fin_app_root" groups="fin_app.group_fin_app_equ" sequence="6"/>
+        <menuitem  id="menu_fin_app_equipments_dash" name="Dashboard" parent="menu_fin_app_equipments" groups="fin_app.group_fin_app_time" action="maintenance.maintenance_dashboard_action" sequence="2"/>
+        <menuitem  id="menu_fin_app_equipments_main" name="Maintenance" parent="menu_fin_app_equipments" groups="fin_app.group_fin_app_time" action="maintenance.hr_equipment_request_action" sequence="4"/>
+        <menuitem  id="menu_fin_app_equipments_equ" name="Equipments" parent="menu_fin_app_equipments" groups="fin_app.group_fin_app_time" action="maintenance.hr_equipment_action" sequence="6"/> -->
+
+
+
+        <!-- ################################################################################################################## -->
+        <!-- #####################################  create root menuitem for Configration   ############################## -->
+
+        <menuitem  id="menu_fin_config_root" name="Configration" web_icon="fin_app,static/description/icon.png" groups="fin_app.group_fin_mang" sequence="13"/>
+        <!-- <menuitem  id="menu_fin_sys_admin_dash" name="Dashboard" action="web_settings_dashboard.web_settings_dashboard_action" parent="menu_fin_config_root" groups="fin_app.group_fin_mang" sequence="2"/> -->
+
+        <menuitem  id="menu_fin_genral" name="General" parent="menu_fin_config_root" groups="fin_app.group_fin_mang" sequence="4"/>
+
+        <menuitem  id="menu_fin_conf_report" name="Reports" parent="menu_fin_config_root" groups="fin_app.group_fin_mang" sequence="10"/>
+        <!-- report account menu -->
+
+
+
+
+        <!-- conf account menu -->
+        <menuitem  id="menu_fin_acc_conf" name="Accounting" parent="menu_fin_config_root" groups="fin_app.group_fin_mang" sequence="20"/>
+        <!-- perant main menu -->
+        <menuitem  id="menu_fin_acc_conf_setting" name="Settings" action="account.action_account_config" parent="menu_fin_acc_conf" groups="fin_app.group_fin_mang" sequence="2"/>
+        <menuitem  id="menu_fin_acc_conf_acc" name="Accounting" parent="menu_fin_acc_conf" groups="fin_app.group_fin_mang" sequence="4"/>
+        <menuitem  id="menu_fin_acc_conf_acc_jor" name="Chart of Accounts" action="account.action_account_form" parent="menu_fin_acc_conf_acc" groups="fin_app.group_fin_mang" sequence="6"/>
+        <menuitem  id="menu_fin_acc_conf_acc_jor" name="Journals" action="account.action_account_journal_form" parent="menu_fin_acc_conf_acc" groups="fin_app.group_fin_mang" sequence="8"/>
+
+
+        <menuitem  id="menu_fin_acc_conf_manag" name="Management" parent="menu_fin_acc_conf" groups="fin_app.group_fin_mang" sequence="8"/>
+        <menuitem  id="menu_fin_acc_conf_acc_bkac" name="Bank Accounts" action="account.action_account_bank_journal_form" parent="menu_fin_acc_conf_manag" groups="fin_app.group_fin_mang" sequence="5"/>
+        <menuitem  id="menu_fin_acc_conf_manag_pterm" name="Payment Terms" action="account.action_payment_term_form" parent="menu_fin_acc_conf_manag" groups="fin_app.group_fin_mang" sequence="6"/>
+        <menuitem  id="menu_fin_acc_conf_acc_fpos" name="Fiscal Positions" action="account.action_account_fiscal_position_form" parent="menu_fin_acc_conf_manag" groups="fin_app.group_fin_mang" sequence="7"/>
+        <menuitem  id="menu_fin_acc_conf_acc_tax" name="Taxes" action="account.action_tax_form" parent="menu_fin_acc_conf_manag" groups="fin_app.group_fin_mang" sequence="8"/>
+        <menuitem  id="menu_fin_acc_conf_mc_c" name="Currencies" action="base.action_currency_form" parent="menu_fin_acc_conf_manag" groups="fin_app.group_fin_mang" sequence="9"/>
+        <!-- <menuitem  id="menu_fin_acc_conf_asset_type" name="Asset Types" action="account_asset.action_account_asset_asset_list_normal_purchase" parent="menu_fin_acc_conf_manag" groups="fin_app.group_fin_mang" sequence="4"/> -->
+
+        <menuitem  id="menu_fin_acc_conf_mc" name="Multi-Currencies" parent="menu_fin_acc_conf" groups="fin_app.group_fin_mang" sequence="10"/>
+
+
+        <!-- conf Warehouse menu -->
+        <menuitem  id="menu_fin_stock_conf" name="Warehouse" parent="menu_fin_config_root" groups="fin_app.group_fin_mang" sequence="30"/>
+        <!-- perant main menu -->
+        <menuitem  id="menu_fin_stock_conf_setting" name="Settings" action="stock.action_stock_config_settings" parent="menu_fin_stock_conf" groups="fin_app.group_fin_mang" sequence="2"/>
+        <menuitem  id="menu_fin_stock_conf_manag" name="Warehouse Management" parent="menu_fin_stock_conf" groups="fin_app.group_fin_mang" sequence="4"/>
+        <menuitem  id="menu_fin_stock_conf_manag_stock" name="Warehouse" action="stock.action_warehouse_form" parent="menu_fin_stock_conf_manag" groups="fin_app.group_fin_mang" sequence="2"/>
+        <menuitem  id="menu_fin_stock_conf_manag_location" name="Locations" action="stock.action_location_form" parent="menu_fin_stock_conf_manag" groups="fin_app.group_fin_mang" sequence="4"/>
+        <menuitem  id="menu_fin_stock_conf_manag_operation" name="All Operations" action="stock.action_picking_type_list" parent="menu_fin_stock_conf_manag" groups="fin_app.group_fin_mang" sequence="6"/>
+        <menuitem  id="menu_fin_stock_conf_product" name="Products" parent="menu_fin_stock_conf" groups="fin_app.group_fin_mang" sequence="6"/>
+        <!-- <menuitem  id="menu_fin_stock_conf_product_prd" name="Products" action="purchase.product_normal_action_puchased" parent="menu_fin_stock_conf_product" sequence="1"/> -->
+        <menuitem  id="menu_fin_stock_conf_product_cat" name="Product Categories" action="product.product_category_action_form" parent="menu_fin_stock_conf_product" groups="fin_app.group_fin_mang" sequence="4"/>
+        <menuitem  id="menu_fin_stock_conf_product_unit" name="Unit of Measure" action="uom.product_uom_form_action" parent="menu_fin_stock_conf_product" groups="fin_app.group_fin_mang" sequence="6"/>
+        <menuitem  id="menu_fin_stock_conf_product_unit_cat" name="Unit of Measure Categories" action="uom.product_uom_categ_form_action" parent="menu_fin_stock_conf_product" groups="fin_app.group_fin_mang" sequence="8"/>
+
+        <!-- conf Purchase menu -->
+        <menuitem  id="menu_fin_pur_conf" name="Purchase" parent="menu_fin_config_root" groups="fin_app.group_fin_mang" sequence="40"/>
+        <!-- perant main menu -->
+        <menuitem  id="menu_fin_pur_conf_setting" name="Settings" action="purchase.action_purchase_configuration" parent="menu_fin_pur_conf" groups="fin_app.group_fin_mang" sequence="2"/>
+
+        <!-- conf Sale menu -->
+        <menuitem  id="menu_fin_sale_conf" name="Sale" parent="menu_fin_config_root" groups="fin_app.group_fin_mang" sequence="50"/>
+        <!-- perant main menu -->
+        <menuitem  id="menu_fin_sale_conf_setting" name="Settings" action="sale.action_sale_config_settings" parent="menu_fin_sale_conf" groups="fin_app.group_fin_mang" sequence="2"/>
+
+        <!-- conf Sale menu -->
+<!--        <menuitem  id="menu_fin_pos_conf" name="Point of Sale" parent="menu_fin_config_root" groups="fin_app.group_fin_mang" sequence="60"/>-->
+
+<!--        <menuitem id="menu_system_pos_settadmin_app"-->
+<!--            name="POS Setting"-->
+<!--            action="point_of_sale.action_pos_configuration"-->
+<!--            parent="menu_fin_pos_conf"-->
+<!--            sequence="6" groups="fin_app.group_fin_pos_mang"/>-->
+
+<!--        <menuitem id="menu_system_product_pos_type_settadmin_app"-->
+<!--            name="POS"-->
+<!--            action="point_of_sale.action_pos_config_pos"-->
+<!--            parent="menu_fin_pos_conf"-->
+<!--            sequence="8" groups="fin_app.group_fin_pos_mang"/>-->
+
+
+        <!-- ################################################################################################################## -->
+        <!-- #####################  create view and action and menu for user    ############################## -->
+        <!-- ################################################################################################################## -->
+
+
+		<record id="fin_user_view_form" model="ir.ui.view">
+            <field name="name">fin.user.Form</field>
+            <field name="model">fin.user</field>
+            <field name="arch" type="xml">
+                <form string="Users">
+                    <sheet>
+                        <header>
+                            <button name="add_user" string="Active" type="object" class="oe_highlight"/>
+                            <button name="check_group" string="check Group" type="object" class="oe_highlight"/>
+                        </header>
+                        <group colspan="4">
+                            <field name="name"/>
+                            <field name="email"/>
+                            <field name="passw" password="True"/>
+                            <field name="group_id" widget="selection" attrs="{'readonly':[('created','=',True)]}"/>
+                            <field name="created" />
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+		<record id="fin_user_view_tree" model="ir.ui.view">
+            <field name="name">fin.user.Tree</field>
+            <field name="model">fin.user</field>
+            <field name="arch" type="xml">
+                    <tree string="Users">
+                        <field name="name"/>
+                        <field name="email"/>
+                        <field name="user_id"/>
+                        <field name="group_id"/>
+                    </tree>
+            </field>
+        </record>
+
+        <record id="open_fin_user_view" model="ir.actions.act_window">
+            <field name="name">Users</field>
+            <field name="res_model">fin.user</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="fin_user_view_tree"/>
+        </record>
+
+        <menuitem  id="menu_fin_user" parent="menu_fin_genral" action="open_fin_user_view"
+            name="Users" groups="fin_app.group_fin_mang" sequence="18"/>
+
+        <menuitem  id="menu_fin_company" parent="menu_fin_genral" action="base.action_res_company_form"
+            name="Company" groups="fin_app.group_fin_mang" sequence="20"/>
+
+
+
+
+        <!-- ################################################################################################################## -->
+        <!-- #####################  create action and menu for res.currency Configration   ############################## -->
+        <!-- ################################################################################################################## -->
+
+        <!-- <record id="open_fin_cur_act" model="ir.actions.act_window">
+            <field name="name">Multi Currencies</field>
+            <field name="res_model">res.currency</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('active','=',True)]</field>
+        </record>
+
+        <menuitem  id="menu_fin_cur" parent="menu_fin_genral" action="open_fin_cur_act"
+            name="Multi Currencies" groups="fin_app.group_fin_mang" sequence="19"/> -->
+
+
+
+
+        <!-- ################################################################################################################## -->
+        <!-- #####################################  inherit in sale.order model   ############################## -->
+        <!-- ################################################################################################################## -->
+
+		<!-- <record model="ir.ui.view" id="fin_sale_form_inherit">
+            <field name="name">fin.sale.form.inherits</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+
+                <field name="partner_id" position="after">
+                    <field name="state_id"/>
+                    <field name="wh_id"/>
+                    <field name="flights_no"/>
+                </field>
+
+            </field>
+        </record> -->
+
+        <!-- Add attash on partner form view -->
+        <record id="view_partners_form_app_fin" model="ir.ui.view">
+            <field name="name">view.res.partner.form.app_fin.inherited1</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field eval="1" name="priority"/>
+            <field name="arch" type="xml">
+                <data>
+                    <page name="internal_notes" position="after">
+                        <page name="ord" string="Order">
+                            <group col="4">
+                                <field name="credit"/>
+                                <field name="credit_limit"/>
+                                <field name="debit"/>
+                                <field name="debit_limit"/>
+                            </group>
+                        </page>
+                    </page>
+                </data>
+            </field>
+        </record>
+
+        <record id="product_template_form_view_inherit" model="ir.ui.view">
+                <field name="name">product Template</field>
+                <field name="model">product.template</field>
+                <field name="inherit_id" ref="product.product_template_form_view"/>
+                <field eval="1" name="priority"/>
+                <field name="arch" type="xml">
+                    <xpath expr="//div[@class='oe_title']" position="replace">
+                        <div class="oe_title">
+                            <label class="oe_edit_only" for="name" string="Product Name"/>
+                            <h1><field name="name" placeholder="Product Name"/></h1>
+                            <div name="options" groups="base.group_user">
+                                <div>
+                                    <field name="sale_ok"/>
+                                    <label for="sale_ok"/>
+                                </div>
+                                <div>
+                                    <field name="purchase_ok"/>
+                                    <label for="purchase_ok"/>
+                                </div>
+                                <div>
+                                    <field name="is_car"/>
+                                    <label for="is_car"/>
+                                </div>
+                            </div>
+                        </div>
+                    </xpath>
+
+                    <data>
+                        <page name="inventory" position="after">
+                            <page name="cars" string="Cars Information" attrs="{'invisible':[('is_car','=',False)]}">
+                                <group col="4" colspan="4">
+                                <field name ="chassis_no" attrs="{'required':[('is_car','=',True)]}" />
+                                <field name ="car_model_id" attrs="{'required':[('is_car','=',True)]}" />
+
+                                </group>
+
+                            </page>
+                        </page>
+                    </data>
+                </field>
+            </record>
+
+
+
+            <record id="product_template_action_car_product" model="ir.actions.act_window">
+                <field name="name">All Cars</field>
+                <field name="type">ir.actions.act_window</field>
+                <field name="res_model">product.template</field>
+                <field name="view_mode">kanban,tree,form</field>
+                <field name="view_type">form</field>
+                <field name="domain">[('is_car', '=', True)]</field>
+                <field name="context">{"default_is_car": 1, 'default_type': 'product'}</field>
+                <field name="help" type="html">
+                    <p class="o_view_nocontent_smiling_face">
+                        Create a new product
+                    </p>
+                </field>
+            </record>
+
+            <menuitem  id="menu_fin_order_data_produc_car"
+                       name="Cars as Product"
+                       action="fin_app.product_template_action_car_product"
+                       parent="menu_fin_order_data"
+                       groups="fin_app.group_fin_stock_mang" sequence="2"/>
+
+
+
+<!--####################################################################################################################-->
+
+            <record id="car_model_view_form" model="ir.ui.view">
+                <field name="name">Model of Car</field>
+                <field name="model">car.mod</field>
+                <field name="arch" type="xml">
+                    <form>
+                        <group>
+                        <field name="car_model" />
+                        </group>
+                    </form>
+                </field>
+            </record>
+
+            <record id="car_model_view_tree" model="ir.ui.view">
+                <field name="name">Model of Car</field>
+                <field name="model">car.mod</field>
+                <field name="arch" type="xml">
+                    <tree>
+                        <field name="car_model" />
+                    </tree>
+                </field>
+            </record>
+
+        <record id="open_car_model_view" model="ir.actions.act_window">
+            <field name="name">Model of Car</field>
+            <field name="res_model">car.mod</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem id="menu_car_model_view_action"
+                  name="Cars model"
+                  parent="fin_app.menu_fin_stock_conf_product"
+                  action="fin_app.open_car_model_view"
+                  groups="fin_app.group_fin_mang" sequence="2" />
+
+
+<!--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@-->
+
+<!--    <record id="stock_picking_inherit" model="ir.ui.view">-->
+<!--        <field name="name">stok picking</field>-->
+<!--        <field name="model">stock.picking</field>-->
+<!--        <field name="inherit_id" ref="stock.view_picking_form"/>-->
+<!--        <field eval="12" name="priority"/>-->
+<!--        <field name="arch" type="xml">-->
+<!--            <data>-->
+<!--                <field name="date_done" position="after">-->
+<!--                    <field name="delay" attrs="{'invisible':[('state', '!=', 'done')]}" /> mints-->
+
+<!--                </field>-->
+<!--            </data>-->
+<!--        </field>-->
+<!--    </record>-->
+    <record id="spInhrit" model="ir.ui.view">
+        <field name="name">Stock Picking</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field eval="12" name="priority"/>
+        <field name="arch" type="xml">
+            <data>
+                <field name="date_done" position="after">
+                    <lable string="Delay"/>
+                    <dev>
+                        <field name="delay_tm" attrs="{'invisible':[('state', 'not in', 'done')]}" class="oe_inline" /> mints
+                    </dev>
+
+                </field>
+            </data>
+
+            <xpath expr="//header" position="inside">
+                <button name="calc_delay_per_minutes" string="Delay Calc." type="opject"
+                        class="oe_highlight"
+                        attrs="{'invisible': [('state', 'not in', 'done')]}"/>
+            </xpath>
+        </field>
+    </record>
+
+
+<!--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@-->
+
+
+<!--        <record id="product_template_form_view_inherit" model="ir.ui.view">-->
+<!--            <field name="name">product Template</field>-->
+<!--            <field name="model">product.template</field>-->
+<!--            <field name="mode">primary</field>-->
+<!--            <field name="inherit_id" ref="product.product_template_form_view"/>-->
+<!--            <field eval="1" name="priority"/>-->
+<!--            <field name="arch" type="xml">-->
+
+<!--                <xpath expr="//page[@name='inventory']" position="after">-->
+<!--                <page name="cars" string="Cars Information" attrs="{'invisible':[('is_car','=',False)]}">-->
+<!--                    <group col="4" colspan="4">-->
+<!--                    <field name ="chassis_no" />-->
+<!--                    <field name ="car_model" />-->
+
+<!--                    </group>-->
+
+<!--                </page>-->
+<!--            </xpath>-->
+
+<!--            </field>-->
+<!--        </record>-->
+
+        <!-- Add attash on sale order form view -->
+        <!-- <record id="view_saleorder_form_app_fin" model="ir.ui.view">
+            <field name="name">view.sale.order.form.app_fin.inherited1</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <data>
+                    <xpath expr="//field[@name='product_id']" position="before">
+                        <field name="barcode_scan"/>
+                    </xpath>
+                </data>
+            </field>
+        </record> -->
+
+        <!-- Add attash on sale order form view -->
+        <!-- <record id="view_saleorder_up_form_app_fin" model="ir.ui.view">
+            <field name="name">view.sale.order.up.form.app_fin.inherited1</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale_stock.view_order_form_inherit_sale_stock"/>
+            <field name="arch" type="xml">
+                <data>
+                    <xpath expr="//field[@name='product_packaging']" position="after">
+                        <field name="size_package" attrs="{'invisible': [('product_packaging', '=', False)]}"/>
+                        <field name="num_package" attrs="{'invisible': [('product_packaging', '=', False)]}"/>
+                    </xpath>
+                </data>
+            </field>
+        </record> -->
+
+</odoo>
